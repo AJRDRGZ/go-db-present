@@ -1,0 +1,80 @@
+Bases de datos con Go
+Junio, 2020
+
+Alejandro Rodríguez
+@ajrdrgz
+aj.sofwaredeveloper@gmail.com
+
+* package database
+.image images/package.png _ 1000
+.background images/background.png
+
+* Database Driver
+Package driver defines interfaces to be implemented by database drivers as used by package sql.
+.link https://golang.org/pkg/database/sql/driver/ database/sql/driver
+.link http://golang.org/s/sqldrivers list of drivers
+.background images/background.png
+
+* 
+database/sql/driver
+.code code/snippets /type.*Driver/,/}/
+
+database/sql
+.code code/snippets /^//START_SQL/,/^//END_SQL/
+
+github.com/lib/pq
+.code code/snippets /^//START_PQ_DRIVER/,/^//END_PQ_DRIVER/
+
+.background images/background.png
+
+* Import a Database Driver
+.code code/snippets /^//START_IMPORT_DRIVER/,/^//END_IMPORT_DRIVER/
+.background images/background.png
+
+github.com/lib/pq
+.code code/snippets /^//START_REGISTER_DRIVER/,/^//END_REGISTER_DRIVER/
+
+* Open Database
+.code code/open_database.go
+.background images/background.png
+
+* SQL Commands
+
+*Query()* | *QueryContext()* | *QueryRow()*
+    - `SELECT`
+
+*Exec()* | *ExecContext()*
+    - `INSERT`
+    - `UPDATE`
+    - `DELETE`
+    - `CREATE`
+    - `DROP`
+    - `ALTER`
+
+* Procesando Datos
+.link https://golang.org/pkg/database/sql/#DB.Exec Exec()
+.link https://golang.org/pkg/database/sql/#Result Result
+.code code/snippets /^//START_PROCESSING_DATA/,/^//END_PROCESSING_DATA/
+.background images/background.png
+
+* Obteniendo Datos - Rows
+.link https://golang.org/pkg/database/sql/#DB.Query Query()
+.link https://golang.org/pkg/database/sql/#Rows Rows
+.code code/snippets /^//START_QUERY_DATA/,/^//END_QUERY_DATA/
+.background images/background.png
+
+* Obteniendo Datos - Row
+.link https://golang.org/pkg/database/sql/#DB.QueryRow QueryRow()
+.link https://golang.org/pkg/database/sql/#Row Row
+.code code/snippets /^//START_QUERY_ROW/,/^//END_QUERY_ROW/
+.background images/background.png
+
+* Declaraciones preparadas
+.link https://golang.org/pkg/database/sql/#DB.Prepare Prepare()
+.link https://golang.org/pkg/database/sql/#Stmt Stmt
+.code code/snippets /^//START_PREPARE_EXEC/,/^//END_PREPARE_EXEC/
+.background images/background.png
+
+* Transacciones
+.code code/snippets /^//START_TRANSACTION/,/^//END_TRANSACTION/
+.background images/background.png

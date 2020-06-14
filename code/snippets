@@ -1,0 +1,128 @@
+type Driver interface {
+    Open(name string) (Conn, error) // HL
+}
+
+//START_SQL OMIT
+type dsnConnector struct {
+	driver driver.Driver // HL
+}
+
+func (t dsnConnector) Connect(_ context.Context) (driver.Conn, error) {
+	return t.driver.Open(t.dsn) // HL
+}
+//END_SQL OMIT
+
+//START_PQ_DRIVER OMIT
+func (d *Driver) Open(name string) (driver.Conn, error) { // HL
+	return Open(name)
+} // HL
+//END_PQ_DRIVER OMIT
+
+//START_IMPORT_DRIVER OMIT
+import (
+	"database/sql"
+	_ "github.com/lib/pq" // HL
+)
+//END_IMPORT_DRIVER OMIT
+
+//START_REGISTER_DRIVER OMIT
+func init() {
+	sql.Register("postgres", &Driver{}) // HL
+}
+//END_REGISTER_DRIVER OMIT
+
+// START_PROCESSING_DATA OMIT
+	res, err := db.Exec("INSERT INTO products(name) VALUES ($1)", "Curso Go") // HL
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	id, err := res.LastInsertId() // HL
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rowsCount, err := res.RowsAffected() // HL
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("lastInserID: %d, rowsAffected: %d\n", id, rowsCount)
+// END_PROCESSING_DATA OMIT
+
+// START_QUERY_DATA OMIT
+	rows, err := db.Query("SELECT id, name FROM products")  // HL
+	if err != nil { ... }
+	defer rows.Close() // HL
+
+	for rows.Next() { // HL
+        var id uint
+		var name string
+		if err := rows.Scan(&id, &name); err != nil { // HL
+            ... 
+        }
+		fmt.Println(id, name)
+	}
+
+	if err := rows.Err(); err != nil { // HL
+		...
+	}
+// END_QUERY_DATA OMIT
+
+// START_QUERY_ROW OMIT
+	product := Product{}
+	err := db.QueryRow("SELECT id, name FROM product WHERE id = $1", 6).Scan( // HL
+		&product.ID,
+		&product.Name,
+	)
+	switch {
+	case err == sql.ErrNoRows: // HL
+		log.Print("no hay un producto con este id")
+	case err != nil:
+		log.Fatal(err)
+	default:
+		log.Printf("Producto -> ID: %d, Name: %s", product.ID, product.Name)
+	}
+// END_QUERY_ROW OMIT
+
+// START_PREPARE_EXEC OMIT
+    stmt, err := db.Prepare("INSERT INTO products(name,location) VALUES ($1, $2)") // HL
+	if err != nil { ... }
+	defer stmt.Close()
+
+	res, err := stmt.Exec("Curso Go", "Popayán") // HL
+	if err != nil { ... }
+
+	id, err := res.LastInsertId()
+	if err != nil { ... }
+
+	rowsAff, err := res.RowsAffected()
+	if err != nil { ... }
+
+    res1, err := stmt.Exec("Curso db con Go", "Cali")  // HL
+    res2, err := stmt.Exec("Curso testing con Go", "Bogotá")  // HL
+// END_PREPARE_EXEC OMIT
+
+// START_TRANSACTION OMIT
+	tx, err := db.Begin() // HL
+	if err != nil { ... }
+
+	stmtInvoice, err := tx.Prepare("INSERT INTO invoices(client) VALUES(?)")
+	if err != nil { ... }
+	defer stmtInvoice.Close()
+
+	invRes, err := stmtInvoice.Exec("Alejandro")
+	if err != nil { tx.Rollback() } // HL
+
+	invID, err := invRes.LastInsertId()
+	if err != nil { tx.Rollback() } // HL
+
+	stmtItem, err := tx.Prepare("INSERT INTO invoice_items(invoice_id, product, price) VALUES(?,?,?)")
+	if err != nil { tx.Rollback() } // HL
+	defer stmtItem.Close()
+
+	_, err = stmtItem.Exec(invID, "Curso Go", 50)
+	if err != nil { tx.Rollback() } // HL
+
+	tx.Commit() // HL
+// END_TRANSACTION OMIT
