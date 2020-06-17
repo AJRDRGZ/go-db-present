@@ -59,8 +59,8 @@ github.com/lib/pq
 
 * Obteniendo Datos - Rows
 .link https://golang.org/pkg/database/sql/#DB.Query Query()
-.link https://golang.org/pkg/database/sql/#Rows Rows
 .code code/snippets /^//START_QUERY_DATA/,/^//END_QUERY_DATA/
+.code code/snippets /^//START_BAD_QUERY_DATA/,/^//END_BAD_QUERY_DATA/
 .background images/background.png
 
 * Obteniendo Datos - Row
@@ -77,4 +77,13 @@ github.com/lib/pq
 
 * Transacciones
 .code code/snippets /^//START_TRANSACTION/,/^//END_TRANSACTION/
+.background images/background.png
+
+* Campos Nulos scanner/valuer
+.code code/snippets /^//START_NULL/,/^//END_NULL/
+.code code/snippets /^//START_NULL_SOLUTION/,/^//END_NULL_SOLUTION/
+.background images/background.png
+
+* Campos Punteros
+.code code/snippets /^//START_NULL_POINTER/,/^//END_NULL_POINTER/
 .background images/background.png

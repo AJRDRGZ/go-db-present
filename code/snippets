@@ -69,6 +69,11 @@ func init() {
 	}
 // END_QUERY_DATA OMIT
 
+// START_BAD_QUERY_DATA OMIT
+	_, err := db.Query("DELETE FROM products") // BAD
+	_, err := db.Exec("DELETE FROM products") // GOOD // HL
+// END_BAD_QUERY_DATA OMIT
+
 // START_QUERY_ROW OMIT
 	product := Product{}
 	err := db.QueryRow("SELECT id, name FROM product WHERE id = $1", 6).Scan( // HL
@@ -108,7 +113,7 @@ func init() {
 	if err != nil { ... }
 
 	stmtInvoice, err := tx.Prepare("INSERT INTO invoices(client) VALUES(?)")
-	if err != nil { ... }
+	if err != nil { tx.Rollback() } // HL
 	defer stmtInvoice.Close()
 
 	invRes, err := stmtInvoice.Exec("Alejandro")
@@ -126,3 +131,42 @@ func init() {
 
 	tx.Commit() // HL
 // END_TRANSACTION OMIT
+
+// START_NULL OMIT
+	type Product struct { Name string }
+	for rows.Next() {
+		var nameNull sql.NullString // HL
+		p := Product{}
+		err := rows.Scan(&nameNull)
+		
+		// nameNull.String contiene un valor si nameNull.Valid es verdadero
+		if nameNull.Valid { // HL
+			p.Name = nameNull.String // HL
+		}
+	}
+// END_NULL OMIT
+
+// START_NULL_POINTER OMIT
+	type Product struct { Name string }
+	for rows.Next() {
+		var name *string // HL
+		p := Product{}
+		err := rows.Scan(&name)
+		
+		// name contiene un valor si name es diferente de nil
+		if name != nil { // HL
+			p.Name = *name // HL
+		}
+	}
+// END_NULL_POINTER OMIT
+
+// START_NULL_SOLUTION OMIT
+	type Product struct { Name string}
+	for rows.Next() {
+		var nameNull sql.NullString // HL
+		p := Product{} // HL
+		err := rows.Scan(&nameNull)
+
+		p.Name = nameNull.String // HL
+	}
+// END_NULL_SOLUTION OMIT
