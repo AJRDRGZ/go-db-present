@@ -87,3 +87,9 @@ github.com/lib/pq
 * Campos Punteros
 .code code/snippets /^//START_NULL_POINTER/,/^//END_NULL_POINTER/
 .background images/background.png
+
+* Arquitectura básica
+.image images/architecture.png 400 980
+.background images/background.png
+
+
