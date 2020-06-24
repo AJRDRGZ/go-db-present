@@ -92,4 +92,11 @@ github.com/lib/pq
 .image images/architecture.png 400 980
 .background images/background.png
 
+* 
+.image images/schema.png 600 700
+.background images/background.png
+
+* tx
+.image images/tx.png 550 900
+.background images/background.png
 
